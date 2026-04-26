@@ -1,96 +1,44 @@
-# 🚀 One-Command Remote Deployment
+# 🚀 Free Deployment to Render
 
-## Simplest Path: GitHub + Render Auto-Deploy
+**Free tier:** 750 hours/month (24/7), free Redis, free PostgreSQL
 
-This is the true zero-effort deployment. Once set up, every git push auto-deploys.
-
-### Step 1: Push to GitHub (Done ✅)
-
-Your repo is now at: https://github.com/CerisonAutomation/free-claude-code
-
-### Step 2: Connect to Render (One-time, 2 minutes)
+## Step 1: Deploy to Render (2 minutes)
 
 1. Go to [render.com](https://render.com)
-2. Click "New +" → "Web Service"
-3. Connect your GitHub account
-4. Select `CerisonAutomation/free-claude-code` repo
-5. Render will auto-detect `render.yaml`
+2. Sign up/login with GitHub
+3. Click "New +" → "Web Service"
+4. Connect GitHub → Select `CerisonAutomation/free-claude-code`
+5. Render auto-detects `render.yaml`
 6. Click "Deploy Web Service"
 
-**That's it!** Render will automatically:
-- Build the Docker image
-- Deploy Redis and PostgreSQL
-- Set environment variables
-- Configure health checks
-- Enable auto-deploys on git push
+## Step 2: Add API Keys (1 minute)
 
-### Step 3: Add API Keys (One-time)
+In Render dashboard → Environment tab, add:
+```
+NVIDIA_NIM_API_KEY=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
+OPENROUTER_API_KEY=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
+DEEPSEEK_API_KEY=sk-8cebbda599014950bdbaf5321d4ffded
+ANTHROPIC_AUTH_TOKEN=freecc
+TELEGRAM_BOT_TOKEN=8346992617:AAG5LVsfFqnJTea2FTSfkeEFgxC08OKurxM
+MESSAGING_PLATFORM=telegram
+```
 
-In Render dashboard, add these environment variables:
-- `NVIDIA_NIM_API_KEY`
-- `OPENROUTER_API_KEY`
-- `DEEPSEEK_API_KEY`
-- `TELEGRAM_BOT_TOKEN` (optional)
+## Step 3: Wait for Deploy (2-3 minutes)
 
-### Future Deployments: One Command
+Render automatically:
+- Builds Docker image
+- Deploys Redis
+- Deploys PostgreSQL
+- Starts the app
+
+**Your app:** `https://free-claude-code.onrender.com`
+
+## Future Updates
 
 ```bash
-# Make changes
 git add .
 git commit -m "Update"
 git push
 ```
 
-**Render auto-deploys in ~2 minutes.**
-
----
-
-## Alternative: Railway (Similar)
-
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Initialize and deploy
-railway init
-railway up
-```
-
-Railway will detect `railway.json` and auto-deploy with Redis/PostgreSQL.
-
----
-
-## Alternative: Fly.io (CLI-based)
-
-```bash
-# Install Fly CLI
-curl -L https://fly.io/install.sh | sh
-
-# Login
-fly auth login
-
-# Deploy
-fly launch
-fly deploy
-```
-
-Note: Fly.io requires manual Redis/PostgreSQL setup.
-
----
-
-## Recommended: Render
-
-**Why Render?**
-- ✅ True auto-deploy on git push
-- ✅ Free Redis and PostgreSQL
-- ✅ Auto-detected from `render.yaml`
-- ✅ Built-in SSL
-- ✅ Zero CLI required after initial GitHub setup
-- ✅ Best free tier (90 days free, then $7/mo)
-
-**Total effort:**
-- Initial setup: 5 minutes
-- Future deployments: 1 command (`git push`)
+Auto-deploys in ~2 minutes.
