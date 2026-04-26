@@ -4,25 +4,16 @@
 
 This is the true zero-effort deployment. Once set up, every git push auto-deploys.
 
-### Step 1: Push to GitHub (One-time)
+### Step 1: Push to GitHub (Done ✅)
 
-```bash
-# Initialize git if needed
-git init
-git add .
-git commit -m "Initial commit"
+Your repo is now at: https://github.com/CerisonAutomation/free-claude-code
 
-# Create GitHub repo and push
-gh repo create free-claude-code --public --source=. --remote=origin
-git push -u origin main
-```
-
-### Step 2: Connect to Render (One-time)
+### Step 2: Connect to Render (One-time, 2 minutes)
 
 1. Go to [render.com](https://render.com)
 2. Click "New +" → "Web Service"
 3. Connect your GitHub account
-4. Select `free-claude-code` repo
+4. Select `CerisonAutomation/free-claude-code` repo
 5. Render will auto-detect `render.yaml`
 6. Click "Deploy Web Service"
 
