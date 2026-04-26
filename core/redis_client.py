@@ -79,23 +79,18 @@ class RedisClient:
         tokens = min(burst, tokens + elapsed * refill_rate)
 
         # Check if request is allowed
-        if tokens >= 1:
+        allowed = tokens >= 1
+        if allowed:
             tokens -= 1
-            # Update Redis
-            pipe.set(tokens_key, tokens)
-            pipe.set(last_update_key, current_time)
-            pipe.expire(tokens_key, window * 2)
-            pipe.expire(last_update_key, window * 2)
-            await pipe.execute()
-            return True, int(tokens)
-        else:
-            # Update tokens without consuming
-            pipe.set(tokens_key, tokens)
-            pipe.set(last_update_key, current_time)
-            pipe.expire(tokens_key, window * 2)
-            pipe.expire(last_update_key, window * 2)
-            await pipe.execute()
-            return False, 0
+
+        # Update Redis (single operation)
+        pipe.set(tokens_key, tokens)
+        pipe.set(last_update_key, current_time)
+        pipe.expire(tokens_key, window * 2)
+        pipe.expire(last_update_key, window * 2)
+        await pipe.execute()
+
+        return allowed, int(tokens)
 
     async def cache_get(self, key: str) -> str | None:
         """Get cached value."""
@@ -146,7 +141,9 @@ class RedisClient:
     async def health_check(self) -> bool:
         """Check Redis health."""
         try:
-            self.client.ping()
+            result = self.client.ping()
+            if hasattr(result, "__await__"):
+                await result
             return True
         except Exception as e:
             logger.error(f"Redis health check failed: {e}")

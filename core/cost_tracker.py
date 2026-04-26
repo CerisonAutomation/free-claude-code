@@ -180,7 +180,7 @@ class CostTracker:
                     SUM(cost) as total_cost
                 FROM usage_logs
                 WHERE user_id = $1
-                AND timestamp >= NOW() - INTERVAL '$2 days'
+                AND timestamp >= NOW() - INTERVAL '1 day' * $2
                 GROUP BY model
                 ORDER BY total_cost DESC
                 """,
@@ -216,7 +216,7 @@ class CostTracker:
                     COUNT(*) as request_count
                 FROM usage_logs
                 WHERE user_id = $1
-                AND timestamp >= NOW() - INTERVAL '$2 days'
+                AND timestamp >= NOW() - INTERVAL '1 day' * $2
                 GROUP BY DATE(timestamp)
                 ORDER BY date DESC
                 """,

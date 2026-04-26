@@ -219,7 +219,7 @@ class Database:
                     AVG(cost) as avg_cost_per_request
                 FROM usage_logs
                 WHERE user_id = $1
-                AND timestamp >= NOW() - INTERVAL '$2 days'
+                AND timestamp >= NOW() - INTERVAL '1 day' * $2
                 """,
                 user_id,
                 days,
