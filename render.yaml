@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: free-claude-code
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8082
+      - key: DATABASE_URL
+        fromDatabase:
+          name: freeclaude-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: freeclaude-redis
+          property: connectionString
+      - key: NVIDIA_NIM_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: ANTHROPIC_AUTH_TOKEN
+        generateValue: true
+      - key: MESSAGING_PLATFORM
+        value: none
+      - key: MODEL
+        value: nvidia_nim/z-ai/glm4.7
+      - key: ENABLE_MODEL_THINKING
+        value: "true"
+      - key: PROVIDER_RATE_LIMIT
+        value: "40"
+      - key: PROVIDER_RATE_WINDOW
+        value: "60"
+      - key: PROVIDER_MAX_CONCURRENCY
+        value: "5"
+    healthCheckPath: /health
+    autoDeploy: true
+    plan: standard
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetCPUPercent: 70
+      targetMemoryPercent: 80
+
+  - type: redis
+    name: freeclaude-redis
+    plan: standard
+    ipAllowList: []
+
+databases:
+  - name: freeclaude-db
+    plan: standard
+    postgresMajorVersion: "16"

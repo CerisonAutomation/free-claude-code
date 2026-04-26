@@ -22,6 +22,11 @@ dependencies = [
     "openai>=2.32.0",
     "loguru>=0.7.0",
     "aiohttp>=3.13.4",
+    "redis>=5.0.0",
+    "asyncpg>=0.29.0",
+    "prometheus-client>=0.20.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
 ]
 
 [project.scripts]
@@ -53,6 +58,11 @@ torch = { index = "pytorch-cu130" }
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [dependency-groups]

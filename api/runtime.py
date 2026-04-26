@@ -85,6 +85,7 @@ class AppRuntime:
         self._provider_registry = ProviderRegistry()
         self.app.state.provider_registry = self._provider_registry
         warn_if_process_auth_token(self.settings)
+        await self._start_infrastructure()
         await self._start_messaging_if_configured()
         self._publish_state()
 
@@ -121,8 +122,54 @@ class AppRuntime:
                 self._provider_registry.cleanup(),
                 log_verbose_errors=verbose,
             )
+        await self._shutdown_infrastructure()
         await self._shutdown_limiter()
         logger.info("Server shut down cleanly")
+
+    async def _start_infrastructure(self) -> None:
+        """Start Redis and database connections."""
+        verbose = self.settings.log_api_error_tracebacks
+        try:
+            from core.database import get_db
+            from core.redis_client import get_redis
+
+            await get_redis()
+            await get_db()
+            logger.info("Infrastructure started (Redis, PostgreSQL)")
+        except Exception as e:
+            if verbose:
+                logger.warning("Infrastructure startup failed: {}", e)
+            else:
+                logger.warning(
+                    "Infrastructure startup failed: exc_type={}",
+                    type(e).__name__,
+                )
+
+    async def _shutdown_infrastructure(self) -> None:
+        """Shutdown Redis and database connections."""
+        verbose = self.settings.log_api_error_tracebacks
+        try:
+            from core.database import close_db
+            from core.redis_client import close_redis
+
+            await best_effort(
+                "close_redis",
+                close_redis(),
+                log_verbose_errors=verbose,
+            )
+            await best_effort(
+                "close_db",
+                close_db(),
+                log_verbose_errors=verbose,
+            )
+        except Exception as e:
+            if verbose:
+                logger.warning("Infrastructure shutdown failed: {}", e)
+            else:
+                logger.warning(
+                    "Infrastructure shutdown failed: exc_type={}",
+                    type(e).__name__,
+                )
 
     async def _start_messaging_if_configured(self) -> None:
         try:

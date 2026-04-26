@@ -134,6 +134,18 @@ class Settings(BaseSettings):
         validation_alias="OLLAMA_BASE_URL",
     )
 
+    # ==================== Redis Config ====================
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        validation_alias="REDIS_URL",
+    )
+
+    # ==================== Database Config ====================
+    database_url: str = Field(
+        default="postgresql://postgres:postgres@localhost:5432/freeclaude",
+        validation_alias="DATABASE_URL",
+    )
+
     # ==================== Model ====================
     # All Claude model requests are mapped to this single model (fallback)
     # Format: provider_type/model/name

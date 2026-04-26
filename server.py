@@ -5,11 +5,20 @@ Minimal entry point that builds the ASGI app via :func:`api.app.create_app`.
 Run with: uv run uvicorn server:app --host 0.0.0.0 --port 8082 --timeout-graceful-shutdown 5
 """
 
+from fastapi import Response
+
 from api.app import create_app
 
 app = create_app()
 
 __all__ = ["app", "create_app"]
+
+
+# Health check endpoint for cloud hosting
+@app.get("/health")
+async def health_check():
+    return Response(status_code=200)
+
 
 if __name__ == "__main__":
     import uvicorn

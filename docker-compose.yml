@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/freeclaude
+      - REDIS_URL=redis://redis:6379/0
+      - NVIDIA_NIM_API_KEY=${NVIDIA_NIM_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN:-freecc}
+      - MESSAGING_PLATFORM=${MESSAGING_PLATFORM:-none}
+      - MODEL=${MODEL:-nvidia_nim/z-ai/glm4.7}
+      - ENABLE_MODEL_THINKING=${ENABLE_MODEL_THINKING:-true}
+      - PROVIDER_RATE_LIMIT=${PROVIDER_RATE_LIMIT:-40}
+      - PROVIDER_RATE_WINDOW=${PROVIDER_RATE_WINDOW:-60}
+      - PROVIDER_MAX_CONCURRENCY=${PROVIDER_MAX_CONCURRENCY:-5}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./agent_workspace:/app/agent_workspace
+    restart: unless-stopped
+    networks:
+      - freeclaude-network
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=freeclaude
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - freeclaude-network
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - freeclaude-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  freeclaude-network:
+    driver: bridge
