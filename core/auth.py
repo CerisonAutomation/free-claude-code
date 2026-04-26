@@ -22,8 +22,8 @@ settings = get_settings()
 # JWT settings
 JWT_SECRET = (
     settings.anthropic_auth_token
-    if hasattr(settings, "anthropic_auth_token")
-    else "secret"
+    if hasattr(settings, "anthropic_auth_token") and settings.anthropic_auth_token
+    else secrets.token_urlsafe(32)
 )
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION = timedelta(days=30)
